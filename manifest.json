@@ -1,0 +1,15 @@
+{
+    "manifest_version": 2,
+    "version": "1.0.0",
+    "name": "OpenCheck",
+    "content_scripts": [
+        {
+            "matches": ["https://twitter.com/*"],
+            "js": ["main.js"],
+            "run_at": "document_end"
+        }
+    ],
+    "web_accessible_resources": [
+        "images/*"
+    ]
+}
