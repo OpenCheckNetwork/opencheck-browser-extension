@@ -281,6 +281,37 @@ function injectChecks() {
     }
 }
 
+function getHoverCardEl() {
+    for (let div of document.querySelectorAll("[data-testid]")) {
+        if (div.getAttribute("data-testid") == "HoverCard") {
+            return div
+        }
+    }
+    return null
+}
+
+/*
+ * Injects a checkmark into verified profiles' hovercards
+ * Returns early if no hover card is present or user is unverified
+ */
+async function injectHoverCard() {
+    const card = getHoverCardEl()
+    if (!card) {
+        return
+    }
+    let username = card.firstChild.querySelectorAll(".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0")[2].innerText.substring(1)
+    let data = await getUserInfo(username)
+
+    if (data.status != "verified") {
+        return
+    }
+
+    let target = card.querySelector(".css-1dbjc4n.r-1awozwy.r-18u37iz.r-dnmrzs")
+    if (target && !target.querySelector(".opencheck-check")) {
+        target.appendChild(generateCheck(data.url))
+    }
+}
+
 function getUsersElementsInThread() {
     let els = []
     for (let div of document.querySelectorAll("[data-testid]")) {
@@ -300,7 +331,7 @@ style.innerText = `
   position: absolute;
   display: none;
   background-color: white;
-  border-radius: 30px;
+  border-radius: 15px;
   box-shadow: lightgray 4px 4px 10px 4px;
   top: 110px;
   left: 70px;
@@ -357,6 +388,8 @@ setInterval(async function () {
         if (document.querySelector(profile_selector)) {
             injectProfile(getUserName())
         }
+
+        injectHoverCard()
     } catch(e) {
         console.log("Sleeping")
         await new Promise(r => setTimeout(r, 2000));
