@@ -242,7 +242,7 @@ async function injectProfile(user) {
  * Injects a checkmark on verified accounts on any post feed.
  * This includes timelines, search results, and threads.
  */
-function injectChecks() {
+function injectThreadChecks() {
     let postEls = document.querySelectorAll(".css-1dbjc4n.r-eqz5dr.r-16y2uox.r-1wbh5a2")
     let usernameEls = getUsersElementsInThread()
 
@@ -383,7 +383,7 @@ document.head.appendChild(style)
 
 setInterval(async function () {
     try {
-        injectChecks()
+        injectThreadChecks()
 
         if (document.querySelector(profile_selector)) {
             injectProfile(getUserName())
