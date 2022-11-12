@@ -269,6 +269,29 @@ async function injectProfile(user) {
     })
 }
 
+async function injectQuoteTweetChecks() {
+    let els = document.querySelectorAll(".css-1dbjc4n.r-1ets6dv.r-1867qdf.r-rs99b7.r-1loqt21.r-2t2l5v.r-1ny4l3l.r-1udh08x.r-o7ynqc.r-6416eg")
+
+    for (let el of els) {
+        let username = el
+            .querySelectorAll(".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0")[2]
+            .innerText.substring(1)
+
+        getUserInfo(username).then(data => {
+            if (data.status == "verified") {
+                let check = generateCheck(data.url)
+                let target = el
+                    .querySelectorAll(".css-1dbjc4n.r-1wbh5a2.r-dnmrzs")[2]
+                    .querySelector(".css-1dbjc4n.r-1awozwy.r-18u37iz.r-dnmrzs")
+
+                if (!target.querySelector(".opencheck-check")) {
+                    target.appendChild(check)
+                }
+            }
+        })
+    }
+}
+
 /*
  * Injects a checkmark on verified accounts on any post feed.
  * This includes timelines, search results, and threads.
@@ -276,6 +299,7 @@ async function injectProfile(user) {
 function injectThreadChecks() {
     let postEls = document.querySelectorAll(".css-1dbjc4n.r-eqz5dr.r-16y2uox.r-1wbh5a2")
     let usernameEls = getElementsByTestId("User-Names")
+    injectQuoteTweetChecks()
 
     let users = []
     for (let el of usernameEls) {
