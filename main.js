@@ -410,10 +410,18 @@ style.innerText = `
 document.head.appendChild(style)
 
 let keep_going = true
+let last_path = ""
 setInterval(async function () {
+    let path = window.location.pathname
+    if (path != last_path) {
+        last_path = path
+        keep_going = true
+    }
+
     if (!keep_going) {
         return
     }
+
     try {
         await injectThreadChecks()
         if (getProfileElement(true)) {
@@ -423,6 +431,5 @@ setInterval(async function () {
     } catch(e) {
         console.error("OpenCheck: stopping because of error: ", e)
         keep_going = false
-        await sleep(5000)
     }
 }, 250)
