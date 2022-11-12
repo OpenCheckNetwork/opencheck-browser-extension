@@ -37,6 +37,26 @@ async function fetchUsersInfo(users) {
 }
 
 /*
+ * Queries the page for a certain selector one-by-one, returning the first
+ * existing element. Necessary because Twitter can return different HTML for
+ * different clients.
+ * If `check` is true, "soft fail" by returning null instead of printing an
+ * error to the console.
+ */
+function findElement(parent, selectors, check = false) {
+    for (let selector of selectors) {
+        let el = parent.querySelector(selector)
+        if (el) {
+            return el
+        }
+    }
+    if (check) {
+        return null
+    }
+    console.error("Failed to find element from selectors: ", selectors)
+}
+
+/*
  * Find the element that displays the user's display name and username
  */
 function getUserElement(user) {
@@ -45,11 +65,14 @@ function getUserElement(user) {
             return div
         }
     }
-    console.log("UserName element not found")
+    console.error("UserName element not found")
 }
 
-function getProfileElement() {
-    return document.querySelectorAll(".css-1dbjc4n.r-le4sbl.r-thmkab.r-19urhcx")[0]
+function getProfileElement(check = false) {
+    return findElement(document, [
+        ".css-1dbjc4n.r-1ifxtd0.r-ymttw5.r-ttdzmv",
+        ".css-1dbjc4n.r-le4sbl.r-thmkab.r-19urhcx",
+    ], check)
 }
 
 /* 
@@ -70,9 +93,11 @@ function getUserName() {
         .substring(1) // remove the leading @ symbol
 }
 
-function getProfileNameEl() {
-    return getUserElement()
-        .querySelector(".css-901oao.r-1awozwy.r-18jsvk2.r-6koalj.r-37j5jr.r-evnaw.r-1vr29t4.r-eaezby.r-bcqeeo.r-1udh08x.r-qvutc0")
+function getProfileNameEl(check = true) {
+    return findElement(getUserElement(), [
+            ".css-901oao.r-1awozwy.r-18jsvk2.r-6koalj.r-37j5jr.r-evnaw.r-1vr29t4.r-eaezby.r-bcqeeo.r-1udh08x.r-qvutc0",
+            ".css-901oao.r-1awozwy.r-18jsvk2.r-6koalj.r-37j5jr.r-adyw6z.r-1vr29t4.r-135wba7.r-bcqeeo.r-1udh08x.r-qvutc0",
+        ], check)
 }
 
 async function fetchProfileHTML(user) {
@@ -244,7 +269,7 @@ async function injectProfile(user) {
  */
 function injectThreadChecks() {
     let postEls = document.querySelectorAll(".css-1dbjc4n.r-eqz5dr.r-16y2uox.r-1wbh5a2")
-    let usernameEls = getUsersElementsInThread()
+    let usernameEls = getElementsByTestId("User-Names")
 
     let users = []
     for (let el of usernameEls) {
@@ -312,18 +337,15 @@ async function injectHoverCard() {
     }
 }
 
-function getUsersElementsInThread() {
+function getElementsByTestId(id) {
     let els = []
     for (let div of document.querySelectorAll("[data-testid]")) {
-        if (div.getAttribute("data-testid") == "User-Names") {
+        if (div.getAttribute("data-testid") == id) {
             els.push(div)
         }
     }
     return els
 }
-
-const profile_selector = ".css-1dbjc4n.r-le4sbl.r-thmkab.r-19urhcx"
-const thread_selector = ".css-1dbjc4n.r-eqz5dr.r-16y2uox.r-1wbh5a2"
 
 let style = document.createElement("style")
 style.innerText = `
@@ -385,7 +407,7 @@ setInterval(async function () {
     try {
         injectThreadChecks()
 
-        if (document.querySelector(profile_selector)) {
+        if (getProfileElement(true)) {
             injectProfile(getUserName())
         }
 
