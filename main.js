@@ -10,6 +10,26 @@
 const baseUrl = "https://opencheck.is/"
 
 /*
+ * Custom fetch function that throws an error for invalid response codes and
+ * integrates with the API directly
+ */
+async function customFetch(endpoint, opts = {}) {
+    let res = fetch(baseUrl + endpoint)
+        .then(res => {
+            if (!res.ok) {
+                throw "Invalid response: " + res.status
+            } else {
+                return res
+            }
+        })
+        .catch(async (e) => {
+            throw e
+        })
+
+    return res
+}
+
+/*
  * Fetch verification information about a user from the OpenCheck API
  *
  * Returns a JSON object in the form of:
@@ -25,15 +45,34 @@ const baseUrl = "https://opencheck.is/"
  * }
  */
 async function fetchUserInfo(user) {
-    let response = await fetch(baseUrl + "v1/identity/twitter/" + user)
+    let response = await customFetch("v1/identity/twitter/" + user)
     let json = response.json()
     return json
 }
 
 async function fetchUsersInfo(users) {
-    let response = await fetch(baseUrl + "v1/identity/twitter?ids=" + users.join(','))
+    let response = await customFetch("v1/identity/twitter?ids=" + users.join(','))
     let json = response.json()
     return json
+}
+
+async function fetchProfileHTML(user) {
+    let response = await customFetch("v1/identity/twitter/" + user + "/html")
+    let html = await response.text()
+    return html
+}
+
+function generateCheck(link) {
+    let check = document.createElement('a')
+    check.className = "opencheck-check"
+    check.innerText += "✅"
+    check.style.textDecoration = "none"
+    check.style.display = "inline-block"
+    check.style.marginLeft = "3px"
+    check.href = link
+    check.title = "Verified by OpenCheck"
+    check.target = "_blank"
+    return check
 }
 
 /*
@@ -98,41 +137,6 @@ function getProfileNameEl(check = true) {
             ".css-901oao.r-1awozwy.r-18jsvk2.r-6koalj.r-37j5jr.r-evnaw.r-1vr29t4.r-eaezby.r-bcqeeo.r-1udh08x.r-qvutc0",
             ".css-901oao.r-1awozwy.r-18jsvk2.r-6koalj.r-37j5jr.r-adyw6z.r-1vr29t4.r-135wba7.r-bcqeeo.r-1udh08x.r-qvutc0",
         ], check)
-}
-
-async function customFetch(endpoint, opts = {}) {
-    let res = fetch(baseUrl + endpoint)
-        .then(res => {
-            if (!res.ok) {
-                throw new Error()
-            } else {
-                return res
-            }
-        })
-        .catch(async (e) => {
-            throw new Error()
-        })
-
-    return res
-}
-
-async function fetchProfileHTML(user) {
-    let response = await customFetch("v1/identity/twitter/" + user + "/html")
-    let html = await response.text()
-    return html
-}
-
-function generateCheck(link) {
-    let check = document.createElement('a')
-    check.className = "opencheck-check"
-    check.innerText += "✅"
-    check.style.textDecoration = "none"
-    check.style.display = "inline-block"
-    check.style.marginLeft = "3px"
-    check.href = link
-    check.title = "Verified by OpenCheck"
-    check.target = "_blank"
-    return check
 }
 
 /*
