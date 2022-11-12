@@ -60,12 +60,12 @@ function findElement(parent, selectors, check = false) {
  * Find the element that displays the user's display name and username
  */
 function getUserElement(user) {
-    for (let div of document.querySelectorAll("[data-testid]")) {
-        if (div.getAttribute("data-testid") == "UserName") {
-            return div
-        }
+    let els = getElementsByTestId("UserName")
+    if (els.length == 0) {
+        console.error("UserName element not found")
+    } else {
+        return els[0]
     }
-    console.error("UserName element not found")
 }
 
 function getProfileElement(check = false) {
@@ -336,15 +336,6 @@ function injectThreadChecks() {
     }
 }
 
-function getHoverCardEl() {
-    for (let div of document.querySelectorAll("[data-testid]")) {
-        if (div.getAttribute("data-testid") == "HoverCard") {
-            return div
-        }
-    }
-    return null
-}
-
 async function appendCheckToElement(el) {
     let username = el
         .querySelectorAll(".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0")[2]
@@ -380,7 +371,7 @@ async function injectSearchResults() {
  * Returns early if no hover card is present or user is unverified
  */
 async function injectHoverCard() {
-    const card = getHoverCardEl()
+    const card = getElementsByTestId("HoverCard")[0]
     if (!card) {
         return
     }
