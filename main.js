@@ -345,6 +345,36 @@ function getHoverCardEl() {
     return null
 }
 
+async function appendCheckToElement(el) {
+    let username = el
+        .querySelectorAll(".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0")[2]
+        .innerText.substring(1)
+
+    let data = await getUserInfo(username)
+    let check = generateCheck(username)
+    if (data.status == "verified") {
+        let target = el.querySelectorAll(".css-1dbjc4n.r-1awozwy.r-18u37iz.r-dnmrzs")[0]
+        if (!target.querySelector(".opencheck-check")) {
+            target.appendChild(check)
+        }
+    }
+}
+
+/*
+ * Injects a checkmark into search results, both on the search page and bar
+ */
+async function injectSearchResults() {
+    // Search page
+    for (let el of getElementsByTestId("UserCell")) {
+        appendCheckToElement(el)
+    }
+
+    // Search bar
+    for (let el of getElementsByTestId("TypeaheadUser")) {
+        appendCheckToElement(el)
+    }
+}
+
 /*
  * Injects a checkmark into verified profiles' hovercards
  * Returns early if no hover card is present or user is unverified
@@ -355,6 +385,9 @@ async function injectHoverCard() {
         return
     }
     let username = card.firstChild.querySelectorAll(".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0")[2].innerText.substring(1)
+    if (!username) {
+        return
+    }
     let data = await getUserInfo(username)
 
     if (data.status != "verified") {
@@ -448,10 +481,11 @@ setInterval(async function () {
 
     try {
         await injectThreadChecks()
+        await injectHoverCard()
+        await injectSearchResults()
         if (getProfileElement(true)) {
             await injectProfile(getUserName())
         }
-        await injectHoverCard()
     } catch(e) {
         console.error("OpenCheck: stopping because of error: ", e)
         keep_going = false
