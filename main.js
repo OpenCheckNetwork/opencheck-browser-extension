@@ -244,8 +244,6 @@ async function injectProfile(user) {
     showOrHideBox()
     resizeBox()
 
-    console.log("Adding event listeners")
-
     window.addEventListener("resize", resizeBox)
     
     check.addEventListener("mouseover", () => {
@@ -273,7 +271,6 @@ async function injectQuoteTweetChecks() {
     let els = document.querySelectorAll(".css-1dbjc4n.r-1ets6dv.r-1867qdf.r-rs99b7.r-1loqt21.r-1ny4l3l.r-1udh08x.r-o7ynqc.r-6416eg")
 
     for (let el of els) {
-	    console.log(el)
         let username = el
             .querySelectorAll(".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0")[2]
             .innerText.substring(1)
@@ -458,6 +455,7 @@ style.innerText = `
 `
 document.head.appendChild(style)
 
+let generating_hoverbox = false
 let keep_going = true
 let last_path = ""
 setInterval(async function () {
@@ -475,8 +473,10 @@ setInterval(async function () {
         await injectThreadChecks()
         await injectHoverCard()
         await injectSearchResults()
-        if (getProfileElement(true)) {
+        if (getProfileElement(true) && !generating_hoverbox) {
+            generating_hoverbox = true
             await injectProfile(getUserName())
+            generating_hoverbox = false
         }
     } catch(e) {
         console.error("OpenCheck: stopping because of error: ", e)
