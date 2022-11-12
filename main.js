@@ -270,9 +270,10 @@ async function injectProfile(user) {
 }
 
 async function injectQuoteTweetChecks() {
-    let els = document.querySelectorAll(".css-1dbjc4n.r-1ets6dv.r-1867qdf.r-rs99b7.r-1loqt21.r-2t2l5v.r-1ny4l3l.r-1udh08x.r-o7ynqc.r-6416eg")
+    let els = document.querySelectorAll(".css-1dbjc4n.r-1ets6dv.r-1867qdf.r-rs99b7.r-1loqt21.r-1ny4l3l.r-1udh08x.r-o7ynqc.r-6416eg")
 
     for (let el of els) {
+	    console.log(el)
         let username = el
             .querySelectorAll(".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0")[2]
             .innerText.substring(1)
