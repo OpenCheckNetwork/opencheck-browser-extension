@@ -100,18 +100,24 @@ function getProfileNameEl(check = true) {
         ], check)
 }
 
-async function fetchProfileHTML(user) {
-    let response = await fetch(baseUrl + "v1/identity/twitter/" + user + "/html")
-/*        .then(res => {
+async function customFetch(endpoint, opts = {}) {
+    let res = fetch(baseUrl + endpoint)
+        .then(res => {
             if (!res.ok) {
                 throw new Error()
+            } else {
+                return res
             }
-            let html = response.text()
-            return html
         })
-        .catch(e => {
+        .catch(async (e) => {
             throw new Error()
-            })*/
+        })
+
+    return res
+}
+
+async function fetchProfileHTML(user) {
+    let response = await customFetch("v1/identity/twitter/" + user + "/html")
     let html = await response.text()
     return html
 }
@@ -403,17 +409,20 @@ style.innerText = `
 `
 document.head.appendChild(style)
 
+let keep_going = true
 setInterval(async function () {
+    if (!keep_going) {
+        return
+    }
     try {
-        injectThreadChecks()
-
+        await injectThreadChecks()
         if (getProfileElement(true)) {
-            injectProfile(getUserName())
+            await injectProfile(getUserName())
         }
-
-        injectHoverCard()
+        await injectHoverCard()
     } catch(e) {
-        console.log("Sleeping")
-        await new Promise(r => setTimeout(r, 2000));
+        console.error("OpenCheck: stopping because of error: ", e)
+        keep_going = false
+        await sleep(5000)
     }
 }, 250)
