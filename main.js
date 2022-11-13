@@ -374,10 +374,14 @@ async function injectSearchResults() {
  */
 async function injectHoverCard() {
     const card = getElementsByTestId("HoverCard")[0]
-    if (!card) {
+    if (!card || !card.firstChild) {
         return
     }
-    let username = card.firstChild.querySelectorAll(".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0")[2].innerText.substring(1)
+    let els = card.firstChild.querySelectorAll(".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0")
+    if (els.length < 3) {
+        return
+    }
+    let username = els[2].innerText.substring(1)
     if (!username) {
         return
     }
