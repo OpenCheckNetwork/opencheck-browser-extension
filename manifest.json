@@ -1,7 +1,11 @@
 {
     "manifest_version": 2,
-    "version": "1.0.0",
     "name": "OpenCheck",
+    "version": "1.0.0",
+    "permissions": [
+        "*://opencheck.is/*",
+        "webRequest"
+    ],
     "content_scripts": [
         {
             "matches": ["https://twitter.com/*"],
