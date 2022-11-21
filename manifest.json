@@ -3,7 +3,7 @@
     "name": "OpenCheck",
     "version": "1.0.0",
     "permissions": [
-        "*://opencheck.is/*",
+        "*://api.opencheck.is/*",
         "webRequest"
     ],
     "content_scripts": [
