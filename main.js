@@ -7,7 +7,7 @@
 // @include https://twitter.com/*
 // ==/UserScript/
 
-const baseUrl = "https://opencheck.is/"
+const baseUrl = "https://api.opencheck.is/"
 
 /*
  * Custom fetch function that throws an error for invalid response codes and
