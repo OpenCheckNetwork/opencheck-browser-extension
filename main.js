@@ -396,19 +396,25 @@ async function injectHoverCard() {
         return
     }
     let els = card.firstChild.querySelectorAll(".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0")
-    if (els.length < 3) {
+    if (els.length < 4) {
         return
     }
 
-    let username = ""
-    if (els[3].innerText[0] === "@") {
-        username = els[3].innerText.substring(1)
-    } else {
-        username = els[4].innerText.substring(1)
+    // Filters elements to find one with a leading @ symbol. This should be the
+    // username. The built-in filter function is not used due to it being
+    // inaccessible to the return value of querySelectorAll.
+    let username_el = null
+    for (let el of els) {
+        if (el.innerText[0] === "@") {
+            username_el = el
+            break
+        }
     }
-    if (!username || username == "") {
+    if (!username_el) {
         return
     }
+    let username = username_el.innerText.substring(1)
+
     let data = await getUserInfo(username)
 
     if (!data || data.status != "verified") {
