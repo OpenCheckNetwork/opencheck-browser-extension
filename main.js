@@ -142,12 +142,7 @@ function getUserName() {
 
 function getProfileNameEl(check = true) {
     return findElement(getUserElement(), [
-        ".css-901oao.r-1awozwy.r-18jsvk2.r-6koalj.r-37j5jr.r-evnaw.r-1vr29t4.r-eaezby.r-bcqeeo.r-1udh08x.r-qvutc0",
-        ".css-901oao.r-1awozwy.r-18jsvk2.r-6koalj.r-37j5jr.r-adyw6z.r-1vr29t4.r-135wba7.r-bcqeeo.r-1udh08x.r-qvutc0",
-        // Dark mode
-        ".css-901oao.r-1awozwy.r-1nao33i.r-6koalj.r-37j5jr.r-adyw6z.r-1vr29t4.r-135wba7.r-bcqeeo.r-1udh08x.r-qvutc0",
-        // Dim mode
-        ".css-901oao.r-1awozwy.r-vlxjld.r-6koalj.r-37j5jr.r-adyw6z.r-1vr29t4.r-135wba7.r-bcqeeo.r-1udh08x.r-qvutc0"
+        ".css-901oao.r-1awozwy.r-6koalj.r-37j5jr.r-adyw6z.r-1vr29t4.r-bcqeeo.r-1udh08x.r-qvutc0"
     ], check)
 }
 
