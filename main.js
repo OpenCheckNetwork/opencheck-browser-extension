@@ -399,8 +399,14 @@ async function injectHoverCard() {
     if (els.length < 3) {
         return
     }
-    let username = els[2].innerText.substring(1)
-    if (!username) {
+
+    let username = ""
+    if (els[3].innerText[0] === "@") {
+        username = els[3].innerText.substring(1)
+    } else {
+        username = els[4].innerText.substring(1)
+    }
+    if (!username || username == "") {
         return
     }
     let data = await getUserInfo(username)
