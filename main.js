@@ -365,7 +365,7 @@ async function appendCheckToElement(el) {
         .innerText.substring(1)
 
     let data = await getUserInfo(username)
-    let check = generateCheck(username)
+    let check = generateCheck(data["url"])
     if (data && data.status == "verified") {
         let target = el.querySelectorAll(".css-1dbjc4n.r-1awozwy.r-18u37iz.r-dnmrzs")[0]
         if (!target.querySelector(".opencheck-check")) {
