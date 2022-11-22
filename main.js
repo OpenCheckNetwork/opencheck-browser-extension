@@ -257,7 +257,9 @@ async function injectProfile(user) {
     // Append check to fixed display name (shown at the top of a scrolling
     // profile or on small screens)
     let fixed_name = document.querySelectorAll(".css-1dbjc4n.r-1awozwy.r-xoduu5.r-18u37iz.r-dnmrzs")[1]
-    fixed_name.appendChild(generateCheck())
+    let fixed_check = generateCheck(data["url"])
+    fixed_check.style.fontSize = "18px"
+    fixed_name.appendChild(fixed_check)
 
     showOrHideBox()
     resizeBox()
