@@ -16,7 +16,11 @@ const baseUrl = "https://api.opencheck.is/"
 async function customFetch(endpoint, opts = {}) {
     let res = fetch(baseUrl + endpoint)
         .then(res => {
-            return res
+            if (!res.ok) {
+                throw "Invalid response: " + res.status
+            } else {
+                return res
+            }
         })
         .catch(async (e) => {
             throw e
@@ -41,15 +45,23 @@ async function customFetch(endpoint, opts = {}) {
  * }
  */
 async function fetchUserInfo(user) {
-    let response = await customFetch("v1/identity/twitter/" + user)
-    let json = response.json()
-    return json
+    try {
+        let response = await customFetch("v1/identity/twitter/" + user)
+        let json = response.json()
+        return json
+    } catch (e) {
+        return {}
+    }
 }
 
 async function fetchUsersInfo(users) {
-    let response = await customFetch("v1/identity/twitter?ids=" + users.join(','))
-    let json = response.json()
-    return json
+    try {
+        let response = await customFetch("v1/identity/twitter?ids=" + users.join(','))
+        let json = response.json()
+        return json
+    } catch (e) {
+        return {}
+    }
 }
 
 async function fetchProfileHTML(user) {
@@ -277,7 +289,7 @@ async function injectQuoteTweetChecks() {
             .innerText.substring(1)
 
         getUserInfo(username).then(data => {
-            if (data.status == "verified") {
+            if (data != undefined && data.status == "verified") {
                 let check = generateCheck(data.url)
                 let target = el
                     .querySelectorAll(".css-1dbjc4n.r-1wbh5a2.r-dnmrzs")[2]
@@ -342,7 +354,7 @@ async function appendCheckToElement(el) {
 
     let data = await getUserInfo(username)
     let check = generateCheck(username)
-    if (data.status == "verified") {
+    if (data && data.status == "verified") {
         let target = el.querySelectorAll(".css-1dbjc4n.r-1awozwy.r-18u37iz.r-dnmrzs")[0]
         if (!target.querySelector(".opencheck-check")) {
             target.appendChild(check)
@@ -384,7 +396,7 @@ async function injectHoverCard() {
     }
     let data = await getUserInfo(username)
 
-    if (data.status != "verified") {
+    if (!data || data.status != "verified") {
         return
     }
 
