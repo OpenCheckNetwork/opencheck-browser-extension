@@ -298,7 +298,7 @@ async function injectQuoteTweetChecks() {
  * Injects a checkmark on verified accounts on any post feed.
  * This includes timelines, search results, and threads.
  */
-function injectThreadChecks() {
+async function injectThreadChecks() {
     let postEls = document.querySelectorAll(".css-1dbjc4n.r-eqz5dr.r-16y2uox.r-1wbh5a2")
     let usernameEls = getElementsByTestId("User-Names")
     injectQuoteTweetChecks()
@@ -314,15 +314,14 @@ function injectThreadChecks() {
     users = users.filter(user => !Object.keys(user_data).includes(user))
 
     if (users.length != 0) {
-        fetchUsersInfo(users).then(data => {
-            let now = Date.now()
-            for (let user of users) {
-                user_data[user] = {
-                    "data": data[user],
-                    "last_updated": now
-                }
+        let data = await fetchUsersInfo(users)
+        let now = Date.now()
+        for (let user of users) {
+            user_data[user] = {
+                "data": data[user],
+                "last_updated": now
             }
-        })
+        }
     }
 
     for (let el of usernameEls) {
@@ -331,6 +330,7 @@ function injectThreadChecks() {
         let username = el.lastChild.querySelector(".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0").innerText.substring(1)
         if (!dn_parent.querySelector(".opencheck-check")
             && Object.keys(user_data).includes(username)
+            && user_data[username].data != undefined
             && user_data[username].data.status == "verified") {
             let link = user_data[username].data.url
             dn_parent.appendChild(generateCheck(link))
