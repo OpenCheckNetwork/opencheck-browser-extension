@@ -17,7 +17,7 @@ async function customFetch(endpoint, opts = {}) {
     let res = fetch(baseUrl + endpoint)
         .then(res => {
             if (!res.ok) {
-                throw "Invalid response: " + res.status
+                return res.status
             } else {
                 return res
             }
