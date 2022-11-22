@@ -134,9 +134,10 @@ function getUserName() {
 
 function getProfileNameEl(check = true) {
     return findElement(getUserElement(), [
-            ".css-901oao.r-1awozwy.r-18jsvk2.r-6koalj.r-37j5jr.r-evnaw.r-1vr29t4.r-eaezby.r-bcqeeo.r-1udh08x.r-qvutc0",
-            ".css-901oao.r-1awozwy.r-18jsvk2.r-6koalj.r-37j5jr.r-adyw6z.r-1vr29t4.r-135wba7.r-bcqeeo.r-1udh08x.r-qvutc0",
-        ], check)
+        ".css-901oao.r-1awozwy.r-18jsvk2.r-6koalj.r-37j5jr.r-evnaw.r-1vr29t4.r-eaezby.r-bcqeeo.r-1udh08x.r-qvutc0",
+        ".css-901oao.r-1awozwy.r-18jsvk2.r-6koalj.r-37j5jr.r-adyw6z.r-1vr29t4.r-135wba7.r-bcqeeo.r-1udh08x.r-qvutc0",
+        ".css-901oao.r-1awozwy.r-1nao33i.r-6koalj.r-37j5jr.r-adyw6z.r-1vr29t4.r-135wba7.r-bcqeeo.r-1udh08x.r-qvutc0",
+    ], check)
 }
 
 /*
@@ -414,7 +415,7 @@ style.innerText = `
   display: none;
   background-color: white;
   border-radius: 15px;
-  box-shadow: lightgray 4px 4px 10px 4px;
+  box-shadow: lightgray 0px 0px 10px 0px;
   top: 110px;
   left: 70px;
   padding: 10px 20px;
