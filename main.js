@@ -16,11 +16,7 @@ const baseUrl = "https://api.opencheck.is/"
 async function customFetch(endpoint, opts = {}) {
     let res = fetch(baseUrl + endpoint)
         .then(res => {
-            if (!res.ok) {
-                return res.status
-            } else {
-                return res
-            }
+            return res
         })
         .catch(async (e) => {
             throw e
