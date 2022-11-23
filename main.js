@@ -330,7 +330,11 @@ async function injectThreadChecks() {
 
     let users = []
     for (let el of usernameEls) {
-        let username = el.lastChild.querySelector(".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0").innerText.substring(1)
+        let username = el
+            .lastChild
+            .querySelector(".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0")
+            .innerText.substring(1)
+
         if (!users.includes(username) && !user_data["username"]) {
             users.push(username)
         }
