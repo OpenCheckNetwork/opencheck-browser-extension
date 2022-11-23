@@ -211,7 +211,9 @@ function showOrHideBox() {
         // we have to set it here
         const check_el = document.querySelector("#opencheck-profile-check")
         let offset_left = check_el.offsetLeft
-        box.style.left = (check_el.clientWidth / 2 + check_el.offsetLeft - box.clientWidth / 2 + 25) + "px"
+        box.style.left =
+            (check_el.clientWidth / 2 + check_el.offsetLeft - box.clientWidth / 2 + 25)
+            + "px"
     } else {
         box.style.display = "none"
     }
@@ -259,7 +261,9 @@ async function injectProfile(user) {
 
     // Append check to fixed display name (shown at the top of a scrolling
     // profile or on small screens)
-    let fixed_name = document.querySelectorAll(".css-1dbjc4n.r-1awozwy.r-xoduu5.r-18u37iz.r-dnmrzs")[1]
+    let fixed_name =
+        document.querySelectorAll(".css-1dbjc4n.r-1awozwy.r-xoduu5.r-18u37iz.r-dnmrzs")[1]
+
     if (!fixed_name.querySelector(".opencheck-check")) {
         let fixed_check = generateCheck(data["url"])
         fixed_check.style.fontSize = "18px"
@@ -347,7 +351,11 @@ async function injectThreadChecks() {
 
     for (let el of usernameEls) {
         let dn_parent = el.querySelector(".css-1dbjc4n.r-1wbh5a2.r-dnmrzs")
-        let username = el.lastChild.querySelector(".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0").innerText.substring(1)
+        let username = el
+            .lastChild
+            .querySelector(".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0")
+            .innerText.substring(1)
+
         let data = await getUserInfo(username)
         if (!dn_parent.querySelector(".opencheck-check")
             && data && data.status == "verified") {
@@ -395,7 +403,8 @@ async function injectHoverCard() {
     if (!card || !card.firstChild) {
         return
     }
-    let els = card.firstChild.querySelectorAll(".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0")
+    let els = card
+        .firstChild.querySelectorAll(".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0")
     if (els.length < 4) {
         return
     }
