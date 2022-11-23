@@ -385,8 +385,6 @@ async function appendCheckToElement(el) {
         return
     }
 
-    console.log(username)
-
     let data = await getUserInfo(username)
     let check = generateCheck(data["url"])
     if (data && data.status == "verified") {
