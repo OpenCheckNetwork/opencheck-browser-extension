@@ -365,20 +365,25 @@ async function injectThreadChecks() {
     }
 }
 
+/*
+ * Filters elements to find one with a leading @ symbol. This should be the
+ * username.
+ */
+function extractUserName(els) {
+    for (let el of els) {
+        if (el.innerText[0] === "@") {
+            return el.innerText.substring(1)
+        }
+    }
+}
+
 async function appendCheckToElement(el) {
     let els = el.querySelectorAll(".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0")
 
-    let username_el = null
-    for (let e of els) {
-        if (e.innerText[0] === "@") {
-            username_el = e
-            break
-        }
-    }
-    if (!username_el) {
+    let username = extractUserName(els)
+    if (!username) {
         return
     }
-    let username = username_el.innerText.substring(1)
 
     console.log(username)
 
@@ -422,20 +427,10 @@ async function injectHoverCard() {
         return
     }
 
-    // Filters elements to find one with a leading @ symbol. This should be the
-    // username. The built-in filter function is not used due to it being
-    // inaccessible to the return value of querySelectorAll.
-    let username_el = null
-    for (let el of els) {
-        if (el.innerText[0] === "@") {
-            username_el = el
-            break
-        }
-    }
-    if (!username_el) {
+    let username = extractUserName(els)
+    if (!username) {
         return
     }
-    let username = username_el.innerText.substring(1)
 
     let data = await getUserInfo(username)
 
