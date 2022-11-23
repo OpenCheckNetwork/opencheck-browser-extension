@@ -366,9 +366,21 @@ async function injectThreadChecks() {
 }
 
 async function appendCheckToElement(el) {
-    let username = el
-        .querySelectorAll(".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0")[2]
-        .innerText.substring(1)
+    let els = el.querySelectorAll(".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0")
+
+    let username_el = null
+    for (let e of els) {
+        if (e.innerText[0] === "@") {
+            username_el = e
+            break
+        }
+    }
+    if (!username_el) {
+        return
+    }
+    let username = username_el.innerText.substring(1)
+
+    console.log(username)
 
     let data = await getUserInfo(username)
     let check = generateCheck(data["url"])
