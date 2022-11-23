@@ -347,14 +347,11 @@ async function injectThreadChecks() {
 
     for (let el of usernameEls) {
         let dn_parent = el.querySelector(".css-1dbjc4n.r-1wbh5a2.r-dnmrzs")
-        let display_name = el.querySelector(".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0")
         let username = el.lastChild.querySelector(".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0").innerText.substring(1)
+        let data = await getUserInfo(username)
         if (!dn_parent.querySelector(".opencheck-check")
-            && Object.keys(user_data).includes(username)
-            && user_data[username].data != undefined
-            && user_data[username].data.status == "verified") {
-            let link = user_data[username].data.url
-            dn_parent.appendChild(generateCheck(link))
+            && data && data.status == "verified") {
+            dn_parent.appendChild(generateCheck(data["url"]))
         }
     }
 }
