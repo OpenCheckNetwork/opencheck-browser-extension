@@ -74,9 +74,6 @@ function generateCheck(link) {
     let check = document.createElement('a')
     check.className = "opencheck-check"
     check.innerText += "✅"
-    check.style.textDecoration = "none"
-    check.style.display = "inline-block"
-    check.style.marginLeft = "3px"
     check.href = link
     check.title = "Verified by OpenCheck"
     check.target = "_blank"
@@ -492,6 +489,12 @@ style.innerText = `
   font-size: 0.8em;
   text-decoration: none;
   color: rgb(29, 155, 240);
+}
+
+.opencheck-check {
+  text-decoration: none;
+  display: inline-block;
+  margin-left: 3px;
 }
 
 @keyframes fadeIn {
