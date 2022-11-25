@@ -10,6 +10,124 @@
 const baseUrl = "https://api.opencheck.is/"
 
 /*
+ * Selectors for verious injection and extraction sites. Selected in order.
+ * Specific classes should only be referenced here.
+ */
+const selectors = {
+    /*
+     * The element containing profile information (begins below the header image)
+     */
+    "profile": [
+        ".css-1dbjc4n.r-1ifxtd0.r-ymttw5.r-ttdzmv",
+        ".css-1dbjc4n.r-le4sbl.r-thmkab.r-19urhcx"
+    ],
+
+    /*
+     * A child of "profile" containing the display name of the account.
+     * The profile check is appended to this element.
+     */
+    "profile_name": [
+        ".css-901oao.r-1awozwy.r-18jsvk2.r-6koalj.r-37j5jr.r-evnaw.r-1vr29t4.r-eaezby.r-bcqeeo.r-1udh08x.r-qvutc0",
+        ".css-901oao.r-1awozwy.r-18jsvk2.r-6koalj.r-37j5jr.r-adyw6z.r-1vr29t4.r-135wba7.r-bcqeeo.r-1udh08x.r-qvutc0",
+        // Dark mode
+        ".css-901oao.r-1awozwy.r-1nao33i.r-6koalj.r-37j5jr.r-adyw6z.r-1vr29t4.r-135wba7.r-bcqeeo.r-1udh08x.r-qvutc0",
+        // Dim mode
+        ".css-901oao.r-1awozwy.r-vlxjld.r-6koalj.r-37j5jr.r-adyw6z.r-1vr29t4.r-135wba7.r-bcqeeo.r-1udh08x.r-qvutc0"
+    ],
+
+    /*
+     * This selector has four matches:
+     * 0. The parent element for the display name
+     * 1. The element for the display name
+     * 2. The parent element for the username
+     * 3. The element for the username
+     * This is a child of the element with a test-id of "UserName"
+     */
+    "profile_username": [".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0"],
+
+    /*
+     * The second element of this query is the parent element for the display name on a profile.
+     */
+    "fixed_name": [".css-1dbjc4n.r-1awozwy.r-xoduu5.r-18u37iz.r-dnmrzs"],
+
+    /*
+     * The HoverCard elements that contain display names and usernames
+     */
+    "hovercard_names": [".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0"],
+
+    /*
+     * The target element for injecting a check into a hovercard.
+     * Sub-element of the HoverCard.
+     */
+    "hovercard_target": [".css-1dbjc4n.r-1awozwy.r-18u37iz.r-dnmrzs"],
+
+    /*
+     * The elements for the display and user names of quoted tweets in a thread.
+     */
+    "quotetweet_names": [
+        ".css-1dbjc4n.r-1ets6dv.r-1867qdf.r-rs99b7.r-1loqt21.r-1ny4l3l.r-1udh08x.r-o7ynqc.r-6416eg"
+    ],
+    "quotetweet_username": [".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0"],
+    "quotetweet_target_parent": [".css-1dbjc4n.r-1wbh5a2.r-dnmrzs"],
+    "quotetweet_target": [".css-1dbjc4n.r-1awozwy.r-18u37iz.r-dnmrzs"],
+
+    /*
+     * The elements for posts in a thread.
+     */
+    "posts": [".css-1dbjc4n.r-eqz5dr.r-16y2uox.r-1wbh5a2"],
+    "post_username": [".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0"],
+    "post_displayname_parent": [".css-1dbjc4n.r-1wbh5a2.r-dnmrzs"],
+
+    /*
+     * The name elements in a UserCell (such as in search results and suggestions)
+     * Child of a UserCell or TypeaheadUser
+     */
+    "usercell_names": [".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0"],
+    "usercell_target": [".css-1dbjc4n.r-1awozwy.r-18u37iz.r-dnmrzs"]
+}
+
+/*
+ * Queries the page for a certain selector one-by-one, returning the first
+ * existing element. Necessary because Twitter can return different HTML for
+ * different clients.
+ * If `check` is false, hard fail by printing an error to the console.
+ * If `index` is less than 0, return all elements found
+ */
+function findElement(parent, sels, index = 0, check = false) {
+    for (let selector of sels) {
+        if (!parent) {
+            break
+        }
+        let els = parent.querySelectorAll(selector)
+
+        if (els.length != 0) {
+            if (index >= 0) {
+                let el = els[index]
+                if (el) {
+                    return el
+                } else {
+                    continue
+                }
+            } else {
+                return els
+            }
+        }
+    }
+    if (!check) {
+        console.error("OpenCheck: Failed to find element from selectors: ", sels)
+    }
+    if (index >= 0) {
+        return null
+    } else {
+        return []
+    }
+}
+
+function findElementFromSelector(parent, id, index = 0, check = false) {
+    return findElement(parent, selectors[id], index, check)
+}
+
+/*
  * Custom fetch function that throws an error for invalid response codes and
  * integrates with the API directly
  */
@@ -81,26 +199,6 @@ function generateCheck(link) {
 }
 
 /*
- * Queries the page for a certain selector one-by-one, returning the first
- * existing element. Necessary because Twitter can return different HTML for
- * different clients.
- * If `check` is true, "soft fail" by returning null instead of printing an
- * error to the console.
- */
-function findElement(parent, selectors, check = false) {
-    for (let selector of selectors) {
-        let el = parent.querySelector(selector)
-        if (el) {
-            return el
-        }
-    }
-    if (check) {
-        return null
-    }
-    console.error("Failed to find element from selectors: ", selectors)
-}
-
-/*
  * Find the element that displays the user's display name and username
  */
 function getUserElement(user) {
@@ -113,39 +211,16 @@ function getUserElement(user) {
 }
 
 function getProfileElement(check = false) {
-    return findElement(document, [
-        ".css-1dbjc4n.r-1ifxtd0.r-ymttw5.r-ttdzmv",
-        ".css-1dbjc4n.r-le4sbl.r-thmkab.r-19urhcx",
-    ], check)
+    return findElement(document, selectors["profile"], 0, check)
 }
 
 /* 
  * Extract a profile's username
  */
 function getUserName() {
-    /*
-     * The query has four matches:
-     * 0. The parent element for the display name
-     * 1. The element for the display name
-     * 2. The parent element for the username
-     * 3. The element for the username
-     * We want the last one.
-     */
-    return getUserElement()
-        .querySelectorAll(".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0")[3]
+    return findElement(getUserElement(), selectors["profile_username"], 3, false)
         .innerText
         .substring(1) // remove the leading @ symbol
-}
-
-function getProfileNameEl(check = true) {
-    return findElement(getUserElement(), [
-        ".css-901oao.r-1awozwy.r-18jsvk2.r-6koalj.r-37j5jr.r-evnaw.r-1vr29t4.r-eaezby.r-bcqeeo.r-1udh08x.r-qvutc0",
-        ".css-901oao.r-1awozwy.r-18jsvk2.r-6koalj.r-37j5jr.r-adyw6z.r-1vr29t4.r-135wba7.r-bcqeeo.r-1udh08x.r-qvutc0",
-        // Dark mode
-        ".css-901oao.r-1awozwy.r-1nao33i.r-6koalj.r-37j5jr.r-adyw6z.r-1vr29t4.r-135wba7.r-bcqeeo.r-1udh08x.r-qvutc0",
-        // Dim mode
-        ".css-901oao.r-1awozwy.r-vlxjld.r-6koalj.r-37j5jr.r-adyw6z.r-1vr29t4.r-135wba7.r-bcqeeo.r-1udh08x.r-qvutc0"
-    ], check)
 }
 
 /*
@@ -242,7 +317,7 @@ async function injectProfile(user) {
         return
     }
 
-    const name_el = getProfileNameEl()
+    const name_el = findElement(getUserElement(), selectors["profile_name"])
 
     let check = generateCheck(data["url"])
     check.id = "opencheck-profile-check"
@@ -256,10 +331,8 @@ async function injectProfile(user) {
 
     getProfileElement().appendChild(box)
 
-    // Append check to fixed display name (shown at the top of a scrolling
-    // profile or on small screens)
-    let fixed_name =
-        document.querySelectorAll(".css-1dbjc4n.r-1awozwy.r-xoduu5.r-18u37iz.r-dnmrzs")[1]
+    // Append check to fixed display name
+    let fixed_name = findElement(document, selectors["fixed_name"], -1)[1]
 
     if (!fixed_name.querySelector(".opencheck-check")) {
         let fixed_check = generateCheck(data["url"])
@@ -294,19 +367,17 @@ async function injectProfile(user) {
 }
 
 async function injectQuoteTweetChecks() {
-    let els = document.querySelectorAll(".css-1dbjc4n.r-1ets6dv.r-1867qdf.r-rs99b7.r-1loqt21.r-1ny4l3l.r-1udh08x.r-o7ynqc.r-6416eg")
+    let els = findElement(document, selectors["quotetweet_names"], -1, true)
 
     for (let el of els) {
-        let username = el
-            .querySelectorAll(".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0")[2]
+        let username = findElement(el, selectors["quotetweet_username"], 2)
             .innerText.substring(1)
 
         getUserInfo(username).then(data => {
             if (data != undefined && data.status == "verified") {
                 let check = generateCheck(data.url)
-                let target = el
-                    .querySelectorAll(".css-1dbjc4n.r-1wbh5a2.r-dnmrzs")[2]
-                    .querySelector(".css-1dbjc4n.r-1awozwy.r-18u37iz.r-dnmrzs")
+                let parent = findElement(el, selectors["quotetweet_target_parent"], 2)
+                let target = findElement(parent, selectors["quotetweet_target"])
 
                 if (!target.querySelector(".opencheck-check")) {
                     target.appendChild(check)
@@ -321,15 +392,13 @@ async function injectQuoteTweetChecks() {
  * This includes timelines, search results, and threads.
  */
 async function injectThreadChecks() {
-    let postEls = document.querySelectorAll(".css-1dbjc4n.r-eqz5dr.r-16y2uox.r-1wbh5a2")
+    let postEls = findElement(document, selectors["post_username"])
     let usernameEls = getElementsByTestId("User-Names")
     injectQuoteTweetChecks()
 
     let users = []
     for (let el of usernameEls) {
-        let username = el
-            .lastChild
-            .querySelector(".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0")
+        let username = findElement(el.lastChild, selectors["post_username"])
             .innerText.substring(1)
 
         if (!users.includes(username) && !user_data["username"]) {
@@ -351,10 +420,8 @@ async function injectThreadChecks() {
     }
 
     for (let el of usernameEls) {
-        let dn_parent = el.querySelector(".css-1dbjc4n.r-1wbh5a2.r-dnmrzs")
-        let username = el
-            .lastChild
-            .querySelector(".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0")
+        let dn_parent = findElement(el, selectors["post_displayname_parent"])
+        let username = findElement(el.lastChild, selectors["post_username"])
             .innerText.substring(1)
 
         let data = await getUserInfo(username)
@@ -378,7 +445,7 @@ function extractUserName(els) {
 }
 
 async function appendCheckToElement(el) {
-    let els = el.querySelectorAll(".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0")
+    let els = findElement(el, selectors["usercell_names"], -1, true)
 
     let username = extractUserName(els)
     if (!username) {
@@ -388,7 +455,7 @@ async function appendCheckToElement(el) {
     let data = await getUserInfo(username)
     let check = generateCheck(data["url"])
     if (data && data.status == "verified") {
-        let target = el.querySelectorAll(".css-1dbjc4n.r-1awozwy.r-18u37iz.r-dnmrzs")[0]
+        let target = findElement(el, selectors["usercell_target"])
         if (!target.querySelector(".opencheck-check")) {
             target.appendChild(check)
         }
@@ -419,9 +486,8 @@ async function injectHoverCard() {
     if (!card || !card.firstChild) {
         return
     }
-    let els = card
-        .firstChild.querySelectorAll(".css-901oao.css-16my406.r-poiln3.r-bcqeeo.r-qvutc0")
-    if (els.length < 4) {
+    let els = findElement(card.firstChild, selectors["hovercard_names"], -1)
+    if (els === null) {
         return
     }
 
@@ -436,7 +502,7 @@ async function injectHoverCard() {
         return
     }
 
-    let target = card.querySelector(".css-1dbjc4n.r-1awozwy.r-18u37iz.r-dnmrzs")
+    let target = findElement(card, selectors["hovercard_target"])
     if (target && !target.querySelector(".opencheck-check")) {
         target.appendChild(generateCheck(data.url))
     }
