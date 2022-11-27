@@ -2,6 +2,7 @@
     "manifest_version": 2,
     "name": "OpenCheck",
     "version": "1.0.0",
+    "description": "Displays OpenCheck identity verification on profiles and timelines on twitter.com",
     "permissions": [
         "*://api.opencheck.is/*",
         "webRequest"
@@ -12,5 +13,8 @@
             "js": ["opencheck.js"],
             "run_at": "document_end"
         }
-    ]
+    ],
+    "icons": {
+        "192": "icons/opencheck-192.png"
+    }
 }
