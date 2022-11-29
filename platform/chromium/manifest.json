@@ -1,11 +1,8 @@
 {
     "manifest_version": 3,
     "name": "OpenCheck",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "description": "Displays OpenCheck identity verification on profiles and timelines on twitter.com",
-    "permissions": [
-        "webRequest"
-    ],
     "host_permissions": [
         "https://api.opencheck.is/*"
     ],
